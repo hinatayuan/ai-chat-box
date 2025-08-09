@@ -1,12 +1,12 @@
 # AI 聊天框 (AI Chat Box)
 
-一个基于 React + TypeScript 构建的现代化 AI 聊天界面组件，集成 OpenAI GPT 和 GraphQL。
+一个基于 React + TypeScript 构建的现代化 AI 聊天界面组件，集成 DeepSeek AI 和 GraphQL。
 
 ## ✨ 特性
 
-- 🎨 **现代化设计** - 渐变色彩和圆润界面
+- 🎨 **现代化设计** - 紫色渐变色彩和圆润界面
 - 💬 **实时聊天** - 流畅的消息发送和接收体验
-- 🤖 **OpenAI 集成** - 支持 GPT-3.5/GPT-4 模型
+- 🤖 **DeepSeek 集成** - 支持多种 DeepSeek 模型
 - 📱 **响应式布局** - 适配不同屏幕尺寸
 - ⚡ **TypeScript** - 完整的类型安全
 - 🎯 **GraphQL API** - 灵活的数据查询接口
@@ -26,7 +26,15 @@
 - **React Markdown** - Markdown 渲染
 - **Highlight.js** - 代码语法高亮
 - **GraphQL** - API 查询语言
+- **DeepSeek API** - 强大的 AI 模型
 - **Vite** - 快速的构建工具
+
+## 🤖 支持的 DeepSeek 模型
+
+- **DeepSeek Chat** - 通用对话模型，适合日常交流
+- **DeepSeek Coder** - 代码专用模型，擅长编程任务
+- **DeepSeek Reasoner** - 推理模型，适合逻辑分析
+- **DeepSeek V3** - 最新版本，性能更强
 
 ## 📦 安装
 
@@ -83,7 +91,7 @@ import { graphqlClient } from './services/graphqlClient';
 // 发送消息
 const response = await graphqlClient.sendMessage({
   message: '你好，请介绍一下自己',
-  model: 'gpt-3.5-turbo',
+  model: 'deepseek-chat',
   temperature: 0.7,
   maxTokens: 1000
 });
@@ -103,7 +111,7 @@ const health = await graphqlClient.healthCheck();
 - ✅ 对话历史上下文
 
 ### 🔧 高级功能
-- ✅ 模型切换（GPT-3.5/GPT-4）
+- ✅ DeepSeek 模型切换
 - ✅ 温度调节（创意性控制）
 - ✅ Token 数量限制
 - ✅ 设置面板
@@ -122,7 +130,7 @@ const health = await graphqlClient.healthCheck();
 - ✅ 用户/AI 头像区分
 - ✅ 消息气泡样式
 - ✅ 在线状态指示器
-- ✅ 渐变背景设计
+- ✅ 紫色渐变背景设计
 - ✅ 响应式布局
 - ✅ 自适应输入框
 
@@ -154,40 +162,39 @@ ai-chat-box/
 
 后端提供：
 - GraphQL API 接口
-- OpenAI GPT 模型集成
+- DeepSeek API 模型集成
 - CORS 跨域支持
 - 错误处理和验证
 
-部署后端到 Cloudflare Workers，然后在前端配置 API 端点。
+### 🔑 获取 DeepSeek API Key
+
+1. 访问 [DeepSeek 官网](https://platform.deepseek.com/)
+2. 注册并登录账户
+3. 获取 API Key
+4. 在 Workers 中设置 `DEEPSEEK_API_KEY` 环境变量
 
 ## 🌟 支持的 Markdown 功能
 
 ### 代码块
 ```javascript
-// 支持语法高亮
-function hello() {
-  console.log('Hello, World!');
+// DeepSeek 支持多种编程语言的代码生成
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n-1) + fibonacci(n-2);
 }
 ```
 
 ### 表格
-| 功能 | 支持 | 说明 |
-|------|------|------|
-| 代码高亮 | ✅ | 多种语言 |
-| 表格渲染 | ✅ | 自动格式化 |
-| 链接 | ✅ | 自动打开新窗口 |
+| 模型 | 特长 | 适用场景 |
+|------|------|----------|
+| DeepSeek Chat | 对话 | 日常交流、问答 |
+| DeepSeek Coder | 编程 | 代码生成、调试 |
+| DeepSeek Reasoner | 推理 | 逻辑分析、数学 |
 
 ### 列表
-- 无序列表支持
-- 有序列表支持
-- 嵌套列表支持
-
-### 其他
-> 引用块支持
-> 
-> **粗体** 和 *斜体* 文本
-> 
-> `行内代码` 高亮
+- 支持多种 DeepSeek 模型
+- 实时模型切换
+- 参数动态调节
 
 ## 🚀 部署
 
@@ -227,11 +234,11 @@ npm run type-check
 ### 自定义主题
 
 ```css
-/* 修改主要颜色 */
+/* 修改主要颜色为 DeepSeek 紫色主题 */
 :root {
-  --primary: #3b82f6;    /* 蓝色 */
-  --secondary: #8b5cf6;  /* 紫色 */
-  --accent: #ec4899;     /* 粉色 */
+  --primary: #8b5cf6;    /* 紫色 */
+  --secondary: #6366f1;  /* 靛蓝 */
+  --accent: #a855f7;     /* 紫罗兰 */
 }
 ```
 
@@ -262,7 +269,7 @@ npm run type-check
 
 - **后端项目**: [AI Chat Worker](https://github.com/hinatayuan/ai-chat-worker)
 - **在线演示**: [Live Demo](https://hinatayuan.github.io/ai-chat-box/)
-- **OpenAI API**: [官方文档](https://platform.openai.com/docs/api-reference)
+- **DeepSeek API**: [官方文档](https://platform.deepseek.com/)
 - **GraphQL**: [官方网站](https://graphql.org/)
 
 ## 👨‍💻 作者
@@ -273,4 +280,4 @@ npm run type-check
 
 ---
 
-**🚀 开始使用 AI Chat Box，体验下一代智能对话界面！**
+**🚀 开始使用 DeepSeek AI Chat Box，体验下一代智能对话界面！**
