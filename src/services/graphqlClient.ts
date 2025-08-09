@@ -38,31 +38,48 @@ class GraphQLClient {
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;
+    // 调试信息：输出端点地址
+    console.log('GraphQL 端点:', endpoint);
   }
 
   async query<T>(query: string, variables?: any): Promise<T> {
-    const response = await fetch(this.endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
-    });
+    console.log('发送 GraphQL 请求到:', this.endpoint);
+    console.log('查询:', query);
+    console.log('变量:', variables);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+      const response = await fetch(this.endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          variables,
+        }),
+      });
+
+      console.log('响应状态:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HTTP 错误:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('GraphQL 响应:', result);
+
+      if (result.errors) {
+        console.error('GraphQL 错误:', result.errors);
+        throw new Error(result.errors[0].message);
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('请求失败:', error);
+      throw error;
     }
-
-    const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
-    }
-
-    return result.data;
   }
 
   async sendMessage(input: ChatInput): Promise<ChatResponse> {
@@ -107,6 +124,10 @@ class GraphQLClient {
 const API_ENDPOINT = process.env.REACT_APP_GRAPHQL_ENDPOINT || 
   'http://localhost:8787/graphql';
 
+// 调试信息：输出环境变量
+console.log('环境变量 REACT_APP_GRAPHQL_ENDPOINT:', process.env.REACT_APP_GRAPHQL_ENDPOINT);
+console.log('使用的 API 端点:', API_ENDPOINT);
+
 export const graphqlClient = new GraphQLClient(API_ENDPOINT);
 
 // React Hook for easy usage
@@ -117,6 +138,9 @@ export const useChat = () => {
 
   const sendMessage = useCallback(async (message: string, settings?: ChatSettings) => {
     if (!message.trim()) return;
+
+    console.log('开始发送消息:', message);
+    console.log('设置参数:', settings);
 
     setIsLoading(true);
     setError(null);
@@ -139,8 +163,12 @@ export const useChat = () => {
         maxTokens: settings?.maxTokens || 1000,
       };
 
+      console.log('发送到 API 的输入:', input);
+
       // 发送到 GraphQL API
       const response = await graphqlClient.sendMessage(input);
+
+      console.log('收到 API 响应:', response);
 
       if (response.success && response.message) {
         const aiMessage: ChatMessage = {
@@ -149,21 +177,26 @@ export const useChat = () => {
         };
 
         setMessages(prev => [...prev, aiMessage]);
+        console.log('AI 消息已添加:', aiMessage);
       } else {
-        setError(response.error || '发送消息失败');
+        const errorMsg = response.error || '发送消息失败';
+        console.error('API 返回错误:', errorMsg);
+        setError(errorMsg);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '网络错误';
-      setError(errorMessage);
       console.error('发送消息错误:', err);
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
+      console.log('消息发送流程结束');
     }
   }, [messages]);
 
   const clearMessages = useCallback(() => {
     setMessages([]);
     setError(null);
+    console.log('消息已清空');
   }, []);
 
   return {
