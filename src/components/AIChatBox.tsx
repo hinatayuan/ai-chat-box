@@ -13,7 +13,7 @@ const AIChatBox: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState({
-    model: 'gpt-3.5-turbo',
+    model: 'deepseek-chat',
     temperature: 0.7,
     maxTokens: 1000,
   });
@@ -46,8 +46,8 @@ const AIChatBox: React.FC = () => {
       inputRef.current.style.height = '60px';
     }
 
-    // 调用 GraphQL API
-    await sendMessage(message);
+    // 调用 GraphQL API 并传递设置
+    await sendMessage(message, settings);
 
     // 重新聚焦输入框
     inputRef.current?.focus();
@@ -83,16 +83,26 @@ const AIChatBox: React.FC = () => {
     adjustTextareaHeight(e.target);
   };
 
+  const getModelDisplayName = (model: string) => {
+    const modelNames = {
+      'deepseek-chat': 'DeepSeek Chat',
+      'deepseek-coder': 'DeepSeek Coder',
+      'deepseek-reasoner': 'DeepSeek Reasoner',
+      'deepseek-v3': 'DeepSeek V3'
+    };
+    return modelNames[model as keyof typeof modelNames] || model;
+  };
+
   return (
     <div className="flex flex-col h-[600px] max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
       {/* 头部 */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 flex items-center gap-3">
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4 flex items-center gap-3">
         <div className="p-2 bg-white/20 rounded-full backdrop-blur-sm">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
           <h3 className="text-white font-semibold">AI 助手</h3>
-          <p className="text-blue-100 text-sm">由 OpenAI {settings.model} 驱动</p>
+          <p className="text-purple-100 text-sm">由 {getModelDisplayName(settings.model)} 驱动</p>
         </div>
         
         {/* 设置按钮 */}
@@ -131,11 +141,12 @@ const AIChatBox: React.FC = () => {
               <select
                 value={settings.model}
                 onChange={(e) => setSettings(prev => ({ ...prev, model: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-4-turbo-preview">GPT-4 Turbo</option>
+                <option value="deepseek-chat">DeepSeek Chat (通用对话)</option>
+                <option value="deepseek-coder">DeepSeek Coder (代码专用)</option>
+                <option value="deepseek-reasoner">DeepSeek Reasoner (推理)</option>
+                <option value="deepseek-v3">DeepSeek V3 (最新版本)</option>
               </select>
             </div>
             
@@ -165,7 +176,7 @@ const AIChatBox: React.FC = () => {
                 step="100"
                 value={settings.maxTokens}
                 onChange={(e) => setSettings(prev => ({ ...prev, maxTokens: parseInt(e.target.value) }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -177,20 +188,20 @@ const AIChatBox: React.FC = () => {
         {/* 欢迎消息 */}
         {messages.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <Bot className="w-8 h-8 text-white" />
             </div>
             <h4 className="text-xl font-semibold text-gray-800 mb-3">
-              欢迎使用 AI 助手
+              欢迎使用 DeepSeek AI 助手
             </h4>
             <p className="text-gray-600 mb-4 max-w-md mx-auto">
-              我可以帮你回答问题、编写代码、提供建议或进行有趣的对话。支持 Markdown 格式输出！
+              我可以帮你回答问题、编写代码、进行推理分析或有趣的对话。支持 Markdown 格式输出！
             </p>
             <div className="flex flex-wrap justify-center gap-2 text-sm">
-              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">代码编程</span>
-              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">学习辅导</span>
-              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">创意写作</span>
-              <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full">问题解答</span>
+              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">代码编程</span>
+              <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full">逻辑推理</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">学习辅导</span>
+              <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full">创意写作</span>
             </div>
           </div>
         )}
@@ -206,7 +217,7 @@ const AIChatBox: React.FC = () => {
             <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
               message.role === 'user'
                 ? 'bg-blue-500'
-                : 'bg-gradient-to-br from-purple-500 to-pink-500'
+                : 'bg-gradient-to-br from-purple-500 to-indigo-500'
             }`}>
               {message.role === 'user' ? (
                 <User className="w-5 h-5 text-white" />
@@ -243,13 +254,13 @@ const AIChatBox: React.FC = () => {
         {/* 加载指示器 */}
         {isLoading && (
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-md">
               <Bot className="w-5 h-5 text-white" />
             </div>
             <div className="bg-white border border-gray-200 px-5 py-4 rounded-2xl rounded-bl-md shadow-sm">
               <div className="flex items-center gap-3">
                 <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
-                <span className="text-sm text-gray-500">AI 正在思考...</span>
+                <span className="text-sm text-gray-500">DeepSeek 正在思考...</span>
               </div>
             </div>
           </div>
@@ -282,7 +293,7 @@ const AIChatBox: React.FC = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder="输入你的消息...（支持 Shift + Enter 换行）"
-              className="w-full px-4 py-3 pr-16 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 min-h-[60px]"
+              className="w-full px-4 py-3 pr-16 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none transition-all duration-200 min-h-[60px]"
               disabled={isLoading}
               maxLength={2000}
               rows={1}
@@ -291,7 +302,7 @@ const AIChatBox: React.FC = () => {
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim() || isLoading}
-            className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+            className="p-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
           >
             {isLoading ? (
               <Loader2 className="w-6 h-6 animate-spin" />
