@@ -27,6 +27,12 @@ export interface ChatResponse {
   timestamp?: string;
 }
 
+export interface ChatSettings {
+  model: string;
+  temperature: number;
+  maxTokens: number;
+}
+
 class GraphQLClient {
   private endpoint: string;
 
@@ -109,7 +115,7 @@ export const useChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const sendMessage = useCallback(async (message: string) => {
+  const sendMessage = useCallback(async (message: string, settings?: ChatSettings) => {
     if (!message.trim()) return;
 
     setIsLoading(true);
@@ -124,14 +130,17 @@ export const useChat = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // 发送到 GraphQL API
-      const response = await graphqlClient.sendMessage({
+      // 构建输入参数
+      const input: ChatInput = {
         message,
         conversation: messages.slice(-10), // 只发送最近10条消息作为上下文
-        model: 'gpt-3.5-turbo',
-        temperature: 0.7,
-        maxTokens: 1000,
-      });
+        model: settings?.model || 'deepseek-chat',
+        temperature: settings?.temperature || 0.7,
+        maxTokens: settings?.maxTokens || 1000,
+      };
+
+      // 发送到 GraphQL API
+      const response = await graphqlClient.sendMessage(input);
 
       if (response.success && response.message) {
         const aiMessage: ChatMessage = {
