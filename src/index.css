@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  .chat-container {
+    @apply flex flex-col h-screen max-h-screen;
+  }
+  
+  .message-bubble {
+    @apply px-4 py-3 rounded-2xl shadow-sm max-w-xs lg:max-w-md;
+  }
+  
+  .user-message {
+    @apply bg-blue-500 text-white rounded-br-sm;
+  }
+  
+  .ai-message {
+    @apply bg-white border border-gray-200 text-gray-800 rounded-bl-sm;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .send-button {
+    @apply p-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
